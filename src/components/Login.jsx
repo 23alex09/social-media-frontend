@@ -25,12 +25,12 @@ export const Login = () => {
             } )
                 .then( ( { data } ) => {
                     localStorage.setItem( 'user', JSON.stringify( data ) );
-                    const { give_name, id, picture } = data;
+                    const { given_name, id, picture } = data;
 
                     const doc = {
                         _id: id,
                         _type: 'user',
-                        userName: give_name,
+                        userName: given_name,
                         image: picture,
                     }
 
