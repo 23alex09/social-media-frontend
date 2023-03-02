@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FcGoogle } from 'react-icons/fc'
-import { GoogleLogin, useGoogleLogin } from '@react-oauth/google'
+import { useGoogleLogin } from '@react-oauth/google'
 import axios from 'axios';
 
 import { client } from '../client'
