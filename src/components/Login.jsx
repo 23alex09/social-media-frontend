@@ -1,44 +1,24 @@
 import { useNavigate } from 'react-router-dom'
 import { FcGoogle } from 'react-icons/fc'
 import { useGoogleLogin } from '@react-oauth/google'
-import axios from 'axios';
 
 import { client } from '../client'
 import shareVideo from '../assets/share.mp4'
 import logo from '../assets/logowhite.png'
+import { getGoogleUserData } from '../helpers/getGoogleUserData';
+import { sendUserInfoToSanity } from '../helpers/sendUserInfoToSanity'
 
 export const Login = () => {
 
     const navigate = useNavigate();
 
-    //todo refactorizar este codigo para limpiar el componente
     const login = useGoogleLogin( {
-        onSuccess: ( response ) => {
+        onSuccess: async ( response ) => {
             //todo utilizar redux para el manejo del usuario
-
-            axios.get( `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${response.access_token}`, {
-                headers: {
-                    Authorization: `Bearer ${response.access_token}`,
-                    Accept: 'application/json'
-                }
-            } )
-                .then( ( { data } ) => {
-                    localStorage.setItem( 'user', JSON.stringify( data ) );
-                    const { given_name, id, picture } = data;
-
-                    const doc = {
-                        _id: id,
-                        _type: 'user',
-                        userName: given_name,
-                        image: picture,
-                    }
-
-                    client.createIfNotExists( doc )
-                        .then( () => {
-                            navigate( '/', { replace: true } )
-                        } );
-                } )
-                .catch( ( err ) => console.log( err ) );
+            const data = await getGoogleUserData( response );
+            localStorage.setItem( 'user', JSON.stringify( data ) );
+            await sendUserInfoToSanity( data );
+            navigate( '/', { replace: true } );
         },
         onError: ( error ) => console.log( error )
     } )
